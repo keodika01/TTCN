@@ -46,28 +46,6 @@
         }
 
     </style>
-    <script>
-        function toggleUploadDropdown(event) {
-        const dropdown = document.getElementById('upload-dropdown');
-        dropdown.classList.toggle('active');
-        event.stopPropagation(); // Ngăn sự kiện click lan lên document
-      }
-
-        // Close dropdown when clicking outside
-        document.addEventListener("click", function(event) {
-            const uploadBtn = document.querySelector(".upload-btn");
-            const dropdown = document.getElementById("upload-dropdown");
-
-            if (!dropdown.contains(event.target) && event.target !== uploadBtn) {
-                dropdown.classList.remove("active");
-            }
-        });
-
-        // Ngăn dropdown đóng khi thao tác các phần tử con
-        document.getElementById('upload-dropdown').addEventListener('click', function(event) {
-            event.stopPropagation();
-        });
-    </script>
 </head>
 <body class="bg-white font-roboto">
     <header class="flex justify-between items-center p-4 border-b">
@@ -150,7 +128,7 @@
     <main class="flex flex-col items-center justify-center min-h-screen">
         <h1 class="text-4xl font-bold text-gray-800 mb-4">Đăng và chia sẻ dữ liệu trực tuyến</h1>
         <p class="text-gray-600 mb-6 text-center">Kéo thả dữ liệu hoặc hình ảnh của bạn vào bất kỳ đâu để bắt đầu tải lên ngay. Giới hạn 10 MB. Liên kết trực tiếp đến dữ liệu, mã BBCode và hình thu nhỏ HTML.</p>
-        <button class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">START UPLOADING</button>
+        <button class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700" onclick="showUploadDropdown()">START UPLOADING</button>
     </main>
 
     <section class="bg-gray-100 py-16">
@@ -268,6 +246,34 @@
             return 0;
     }
   }
+
+  function toggleUploadDropdown(event) {
+        const dropdown = document.getElementById('upload-dropdown');
+        dropdown.classList.toggle('active');
+        event.stopPropagation(); // Ngăn sự kiện click lan lên document
+      }
+
+        // Close dropdown when clicking outside
+        document.addEventListener("click", function(event) {
+            const uploadBtn = document.querySelector(".upload-btn");
+            const dropdown = document.getElementById("upload-dropdown");
+
+            if (!dropdown.contains(event.target) && !event.target.classList.contains('upload-btn')) {
+                dropdown.classList.remove("active"); // Ẩn dropdown nếu nhấn ra ngoài
+            }
+        });
+
+        // Ngăn dropdown đóng khi thao tác các phần tử con
+        document.getElementById('upload-dropdown').addEventListener('click', function(event) {
+            event.stopPropagation();
+        });
+
+  function showUploadDropdown() {
+    const dropdown = document.getElementById('upload-dropdown');
+    dropdown.classList.toggle('active');
+    document.getElementById('images').click(); // Tự động mở hộp thoại chọn file
+  }
+
 </script>
 
 
