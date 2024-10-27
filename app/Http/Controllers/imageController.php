@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\image;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class imageController extends Controller
 {
@@ -21,18 +22,30 @@ class imageController extends Controller
     public function storeupload(Request $request)
     {
         $request->validate([
-            'images.*' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
+            'images.*' => 'file|mimes:jpeg,jpg,png,gif,pdf,doc,docx|max:10240',
         ]);
-        if($request->hasFile('images')) {
-            foreach($request->file('images') as $image) {
-                $URL = time() . '-' . $image->getClientOriginalName();
-                $image->move(public_path('images'), $URL);
-                image::create([
-                    'URL' => $URL,
+        $urls = [];
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                // Tạo tên tệp duy nhất
+                $filename = time() . '-' . $image->getClientOriginalName();
+    
+                // Lưu tệp vào thư mục images
+                $path = $image->storeAs('images', $filename, 'public'); // Sử dụng storeAs để đặt tên tệp
+    
+                // Lưu vào cơ sở dữ liệu
+                $url = Storage::url($path); // Tạo URL truy cập
+                Image::create([
+                    'URL' => $url, // Lưu URL đã tạo
                 ]);
+    
+                // Thêm URL vào mảng để hiển thị
+                $urls[] = asset($url);
             }
-            return back()->with('success', 'Thành công!');
+    
+            return redirect()->back()->with('success', 'Thành công!')->with('urls', $urls);
         }
-        return back()->with('success', 'Thất bại!');
+    
+        return redirect()->back()->with('error', 'Thất bại! Không có tệp nào được tải lên.');
     }
 }
