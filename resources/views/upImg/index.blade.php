@@ -211,52 +211,50 @@
   });
 
   function handleFiles(files) {
-      const previewContainer = document.getElementById('preview-images');
-      previewContainer.innerHTML = ''; // Xóa các hình ảnh đã xem trước
+    const previewContainer = document.getElementById('preview-images');
+    previewContainer.innerHTML = ''; // Xóa các hình ảnh đã xem trước
 
-      for (let i = 0; i < files.length; i++) {
-          const file = files[i];
-          const reader = new FileReader();
+    for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const reader = new FileReader();
 
-          if (file.type.match('image.*') || 
-                file.type === 'application/pdf' || 
-                file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || 
-                file.type === 'application/zip' || 
-                file.name.endsWith('.zip') || 
-                file.name.endsWith('.rar')) {
-              reader.onload = (function(theFile) {
-                  return function(e) {
-                      const div = document.createElement('div');
-                      div.classList.add('image-preview');
-                      const icon = getFileIcon(theFile.name);
-                      div.innerHTML = `
-                      ${file.type.match('image.*') ? 
-                    `<img src="${e.target.result}" alt="${theFile.name}" style="width: 100px; height: 100px;">` : 
-                    `<i class="${icon}"></i>`
-                }
-                <p>${theFile.name}</p>
-            `;
-                      previewContainer.appendChild(div);
-                  };
-              })(file);
-              reader.readAsDataURL(file); // Đọc file dưới dạng URL
-          }
-      }
-  }
-  function getFileIcon(fileName) {
-      const extension = fileName.split('.').pop().toLowerCase();
-      switch (extension) {
-          case 'pdf': return 'fas fa-file-pdf text-red-500';
-          case 'docx': return 'fas fa-file-word text-blue-500';
-          case 'zip':
-            return 'fas fa-file-archive text-yellow-500';
-        case 'rar':
-            return 'fas fa-file-archive text-purple-500';
-          case 'gif':
-          case 'jpeg':
-          default: return 'fas fa-file';
-      }
-  }
+        // Chỉ xử lý ảnh, PDF, DOCX, ZIP và RAR
+        if (
+            file.type.match('image.*') || 
+            file.type === 'application/pdf' || 
+            file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
+            file.name.endsWith('.zip') || 
+            file.name.endsWith('.rar')
+        ) {
+            reader.onload = (function(theFile) {
+                return function(e) {
+                    const div = document.createElement('div');
+                    div.classList.add('image-preview');
+                    const icon = getFileIcon(theFile.name);
+                    div.innerHTML = `
+                        ${file.type.match('image.*') ? `<img src="${e.target.result}" alt="${theFile.name}" style="width: 100px; height: 100px;">` : `<i class="${icon}"></i>`}
+                        <p>${theFile.name}</p>
+                    `;
+                    previewContainer.appendChild(div);
+                };
+            })(file);
+            reader.readAsDataURL(file); // Đọc file dưới dạng URL
+        }
+    }
+}
+
+function getFileIcon(fileName) {
+    const extension = fileName.split('.').pop().toLowerCase();
+    switch (extension) {
+        case 'pdf': return 'fas fa-file-pdf text-red-500';
+        case 'docx': return 'fas fa-file-word text-blue-500';
+        case 'zip': return 'fas fa-file-archive text-yellow-500';
+        case 'rar': return 'fas fa-file-archive text-yellow-500';
+        case 'gif':
+        case 'jpeg':
+        default: return 'fas fa-file';
+    }
+}
 
   function toggleUploadDropdown(event) {
         const dropdown = document.getElementById('upload-dropdown');
