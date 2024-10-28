@@ -22,7 +22,7 @@ class imageController extends Controller
     public function storeupload(Request $request)
     {
         $request->validate([
-            'images.*' => 'file|mimes:jpeg,jpg,png,gif,pdf,doc,docx|max:10240',
+            'images.*' => 'file|mimes:jpeg,jpg,png,gif,pdf,doc,docx,zip,rar|max:10240',
         ]);
         $urls = [];
         if ($request->hasFile('images')) {

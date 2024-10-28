@@ -115,7 +115,7 @@
                         <i class="fas fa-cloud-upload-alt text-6xl text-blue-500"></i>
                         <p id="drop-zone-text" class="mt-4 text-lg">Kéo thả hoặc paste (Ctrl + V) ảnh vào đây để upload</p>
                         <p class="text-gray-500 mt-2">Bạn có thể <a href="#" class="text-blue-500">tải lên từ máy tính</a> hoặc <a href="#" class="text-blue-500">thêm địa chỉ ảnh</a>.</p>
-                        <input class="text-gray-600 mb-4" type="file" id="images" name="images[]" accept="image/*,.pdf,.docx" multiple style="display: none;">
+                        <input class="text-gray-600 mb-4" type="file" id="images" name="images[]" accept="image/*,.pdf,.docx,.zip,.rar" multiple style="display: none;">
                         <div id="preview-images" class="mt-4"></div>
                     </div>
                     <button class="bg-blue-500 text-white py-2 px-6 rounded" type="submit">Upload</button>
@@ -177,7 +177,8 @@
                   previewContainer.appendChild(div);
               };
           })(file);
-          if (file.type.match('image.*') || file.type === 'application/pdf' || file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+          if (file.type.match('image.*') || file.type === 'application/pdf' || file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || file.name.endsWith('.zip') || 
+            file.name.endsWith('.rar')) {
             reader.readAsDataURL(file); // Đọc file
         }
       }
@@ -215,36 +216,46 @@
 
       for (let i = 0; i < files.length; i++) {
           const file = files[i];
-          if (!file.type.match('image.*')) {
-              continue; // Chỉ xử lý các file hình ảnh
-          }
           const reader = new FileReader();
-          reader.onload = (function(theFile) {
-              return function(e) {
-                  const div = document.createElement('div');
-                  div.classList.add('image-preview');
-                  div.innerHTML = `
-                      <img src="${e.target.result}" alt="${theFile.name}" style="max-width: 100px; max-height: 100px;">
-                      <p>${theFile.name}</p>
-                  `;
-                  previewContainer.appendChild(div);
-              };
-          })(file);
-          reader.readAsDataURL(file); // Đọc file dưới dạng URL
+
+          if (file.type.match('image.*') || 
+                file.type === 'application/pdf' || 
+                file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || 
+                file.type === 'application/zip' || 
+                file.name.endsWith('.zip') || 
+                file.name.endsWith('.rar')) {
+              reader.onload = (function(theFile) {
+                  return function(e) {
+                      const div = document.createElement('div');
+                      div.classList.add('image-preview');
+                      const icon = getFileIcon(theFile.name);
+                      div.innerHTML = `
+                      ${file.type.match('image.*') ? 
+                    `<img src="${e.target.result}" alt="${theFile.name}" style="width: 100px; height: 100px;">` : 
+                    `<i class="${icon}"></i>`
+                }
+                <p>${theFile.name}</p>
+            `;
+                      previewContainer.appendChild(div);
+                  };
+              })(file);
+              reader.readAsDataURL(file); // Đọc file dưới dạng URL
+          }
       }
   }
   function getFileIcon(fileName) {
-    const extension = fileName.split('.').pop().toLowerCase();
-    switch (extension) {
-        case 'gif':
-            return 'fas fa-file-image'; // Biểu tượng ảnh
-        case 'pdf':
-            return 'fas fa-file-pdf'; // Biểu tượng PDF
-        case 'docx':
-            return 'fas fa-file-word'; // Biểu tượng DOCX
-        default:
-            return 0;
-    }
+      const extension = fileName.split('.').pop().toLowerCase();
+      switch (extension) {
+          case 'pdf': return 'fas fa-file-pdf text-red-500';
+          case 'docx': return 'fas fa-file-word text-blue-500';
+          case 'zip':
+            return 'fas fa-file-archive text-yellow-500';
+        case 'rar':
+            return 'fas fa-file-archive text-purple-500';
+          case 'gif':
+          case 'jpeg':
+          default: return 'fas fa-file';
+      }
   }
 
   function toggleUploadDropdown(event) {
