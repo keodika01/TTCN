@@ -118,7 +118,9 @@
                         <input class="text-gray-600 mb-4" type="file" id="images" name="images[]" accept="image/*,.pdf,.docx,.zip,.rar" multiple style="display: none;">
                         <div id="preview-images" class="mt-4"></div>
                     </div>
-                    <button class="bg-blue-500 text-white py-2 px-6 rounded" type="submit">Upload</button>
+                    <div class="flex justify-center items-center h-20">
+                        <button class="bg-blue-500 text-white py-2 px-6 rounded" type="submit">Upload</button>
+                    </div>
                   </form>
                 </main>
             </div>
